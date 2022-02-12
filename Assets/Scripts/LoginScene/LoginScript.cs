@@ -18,6 +18,8 @@ public class LoginScript : MonoBehaviour
     public float fadeOutDuration = 2;
     public AnimationCurve fadeOutAlpha = AnimationCurve.Linear(0, 1, 1, 0);
 
+    public GameObject[] destroyOnSceneLoad;
+
     private async void Start()
     {
         if (!stepInit || !stepLogin || !stepLoadScene || !canvasGroup)
@@ -82,6 +84,11 @@ public class LoginScript : MonoBehaviour
 
     public IEnumerator LoadSceneCoroutine()
     {
+        foreach (var obj in destroyOnSceneLoad)
+        {
+            Destroy(obj);
+        }
+
         var activeScene = SceneManager.GetActiveScene();
         yield return SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Additive);
         stepLoadScene.SetOK();
