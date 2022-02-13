@@ -21,7 +21,7 @@ public class JoinGameScript : MonoBehaviour
             return;
         }
 
-        JoinGame(fieldJoinCode.field.text);
+        JoinGame(fieldJoinCode.field.text.ToUpper());
     }
 
     private void SetFormInteractable(bool interactable)
