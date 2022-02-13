@@ -46,11 +46,20 @@ public class JoinGameScript : MonoBehaviour
             allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
             allocationStatus.SetOK("Joined game");
         }
+        // Haven't found any documentation, but some manual testing suggests that 15001
+        // is the "wrong code" or "invalid code" error code
+        catch (RelayServiceException ex) when (ex.Reason == RelayExceptionReason.InvalidRequest && ex.ErrorCode == 15001)
+        {
+            Debug.LogError($"Failed to join by join code (reason={ex.Reason}, code={ex.ErrorCode}): {ex}", this);
+            SetFormInteractable(true);
+            allocationStatus.SetError($"Join game: wrong join code");
+            return;
+        }
         catch (Exception ex)
         {
             Debug.LogError($"Failed to join by join code: {ex}", this);
             SetFormInteractable(true);
-            allocationStatus.SetError($"Join game: " + ex.Message);
+            allocationStatus.SetError($"Join game: {ex.Message}");
             return;
         }
 
