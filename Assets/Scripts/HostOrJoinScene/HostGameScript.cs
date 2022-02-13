@@ -78,6 +78,7 @@ public class HostGameScript : MonoBehaviour
         try
         {
             StartHost(allocation);
+            startHostStatus.SetOK();
         }
         catch (Exception ex)
         {
