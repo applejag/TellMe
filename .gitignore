@@ -60,3 +60,8 @@ sysinfo.txt
 crashlytics-build.properties
 
 
+## Document editors
+# LibreOffice
+.~lock.*
+# Vim
+*.swp
