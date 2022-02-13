@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 public class SegmentDigit : MonoBehaviour
 {
     public GameObject[] segments;
-    public int[][] digits = new int[][]{
+    private int[][] digits = new int[][]{
         new int[]{0, 1, 2, 4, 5, 6},    // 0
         new int[]{2, 5},                // 1
         new int[]{0, 2, 3, 4, 6},       // 2
@@ -24,7 +24,7 @@ public class SegmentDigit : MonoBehaviour
         foreach (var seg in segments) {
             seg.SetActive(false);
         }
-        
+
         foreach (var idx in digits[digit])
         {
             segments[idx].SetActive(true);
