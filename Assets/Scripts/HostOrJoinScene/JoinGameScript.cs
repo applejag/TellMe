@@ -1,0 +1,78 @@
+using System;
+using System.Threading.Tasks;
+using Unity.Netcode;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class JoinGameScript : MonoBehaviour
+{
+    public ValidatedField fieldJoinCode;
+    public StatusStack statusStack;
+
+    public Selectable[] disableOnLoad;
+
+    public void OnJoinGameClick()
+    {
+        var joinCodeValid = fieldJoinCode.Validate();
+        if (!joinCodeValid)
+        {
+            return;
+        }
+
+        JoinGame(fieldJoinCode.field.text);
+    }
+
+    private void SetFormInteractable(bool interactable)
+    {
+        foreach (var obj in disableOnLoad)
+        {
+            obj.interactable = interactable;
+        }
+    }
+
+    private async void JoinGame(string joinCode)
+    {
+        SetFormInteractable(false);
+
+        statusStack.ClearStatuses();
+        var allocationStatus = statusStack.AddStatus("Join game");
+        var startClientStatus = statusStack.AddStatus("Start client");
+
+        JoinAllocation allocation;
+        try
+        {
+            allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
+            allocationStatus.SetOK("Joined game");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to join by join code: {ex}", this);
+            SetFormInteractable(true);
+            allocationStatus.SetError($"Join game: " + ex.Message);
+            return;
+        }
+
+        try
+        {
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(
+                ipAddress: allocation.RelayServer.IpV4,
+                port: (ushort)allocation.RelayServer.Port,
+                allocationId: allocation.AllocationIdBytes,
+                key: allocation.Key,
+                connectionData: allocation.ConnectionData,
+                hostConnectionData: allocation.HostConnectionData
+            );
+            NetworkManager.Singleton.StartClient();
+            startClientStatus.SetOK();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to start client: {ex}", this);
+            SetFormInteractable(true);
+            startClientStatus.SetError($"Start client: " + ex.Message);
+            return;
+        }
+    }
+}
