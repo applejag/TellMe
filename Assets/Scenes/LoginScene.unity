@@ -276,7 +276,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4333149218258716504, guid: f41883e65986efd4da3a00667777b1c9, type: 3}
       propertyPath: m_text
-      value: Load scene
+      value: Load menu
       objectReference: {fileID: 0}
     - target: {fileID: 4333149218258716504, guid: f41883e65986efd4da3a00667777b1c9, type: 3}
       propertyPath: m_fontSizeBase
