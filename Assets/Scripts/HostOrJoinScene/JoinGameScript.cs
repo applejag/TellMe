@@ -90,7 +90,7 @@ public class JoinGameScript : MonoBehaviour
     }
 
     [ServerRpc]
-    private void NotifyServerOfJoin(string name) {
+    private void NotifyOfJoinServerRpc(string name) {
         FindObjectOfType<PlayerList>().Add(name);
     }
 }
