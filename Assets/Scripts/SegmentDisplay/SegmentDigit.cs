@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 public class SegmentDigit : MonoBehaviour
 {
     public GameObject[] segments;
-    private int[][] digits = new int[][]{
+    private static readonly int[][] digits = new int[][]{
         new int[]{0, 1, 2, 4, 5, 6},    // 0
         new int[]{2, 5},                // 1
         new int[]{0, 2, 3, 4, 6},       // 2
