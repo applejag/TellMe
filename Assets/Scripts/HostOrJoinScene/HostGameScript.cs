@@ -15,6 +15,8 @@ public class HostGameScript : MonoBehaviour
 
     public StatusStack statusStack;
 
+    public JoinCodeScript joinCodeGO;
+
     public void OnHostGameClick()
     {
         var gameNameValid = fieldGameName.Validate();
@@ -66,6 +68,7 @@ public class HostGameScript : MonoBehaviour
         {
             joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
             joinCodeStatus.SetOK("Join code: " + joinCode);
+            joinCodeGO.SetCode(joinCode);
         }
         catch (Exception ex)
         {
