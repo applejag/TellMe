@@ -75,6 +75,10 @@ public class JoinGameScript : MonoBehaviour
             );
             NetworkManager.Singleton.StartClient();
             startClientStatus.SetOK();
+
+            var rand = new System.Random();
+            string randomName = "0x"+(rand.Next() % 10000).ToString("X4");
+            NotifyServerOfJoin(randomName);
         }
         catch (Exception ex)
         {
@@ -83,5 +87,10 @@ public class JoinGameScript : MonoBehaviour
             startClientStatus.SetError($"Start client: " + ex.Message);
             return;
         }
+    }
+
+    [ServerRpc]
+    private void NotifyServerOfJoin(string name) {
+        FindObjectOfType<PlayerList>().Add(name);
     }
 }

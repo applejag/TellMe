@@ -16,6 +16,7 @@ public class HostGameScript : MonoBehaviour
     public StatusStack statusStack;
 
     public JoinCodeScript joinCodeGO;
+    public TMPro.TMP_Text hostPlayerListEntry;
 
     public void OnHostGameClick()
     {
@@ -89,6 +90,8 @@ public class HostGameScript : MonoBehaviour
             SetFormInteractable(true);
             return;
         }
+
+        hostPlayerListEntry.SetText(fieldHostName.field.text);
 
         Debug.Log("done");
     }
