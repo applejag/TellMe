@@ -78,7 +78,7 @@ public class JoinGameScript : MonoBehaviour
 
             var rand = new System.Random();
             string randomName = "0x"+(rand.Next() % 10000).ToString("X4");
-            NotifyServerOfJoin(randomName);
+            NotifyOfJoinServerRpc(randomName);
         }
         catch (Exception ex)
         {
