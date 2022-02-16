@@ -12,11 +12,9 @@ public class TabSelection : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (system.currentSelectedGameObject != null && Input.GetKeyDown(KeyCode.Tab))
         {
-            Selectable target;
-
-            target = system.currentSelectedGameObject?.GetComponent<Selectable>().FindSelectableOnDown();
+            var target = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
 
             if (target != null) {
                 TMPro.TMP_InputField inputField = target.GetComponent<TMPro.TMP_InputField>();
