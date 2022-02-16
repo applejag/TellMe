@@ -1,10 +1,11 @@
 using System;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class JoinGameScript : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class JoinGameScript : MonoBehaviour
     public StatusStack statusStack;
 
     public Selectable[] disableOnLoad;
+    public GameObject playerManagerPrefab;
 
     public void OnJoinGameClick()
     {
@@ -76,9 +78,9 @@ public class JoinGameScript : MonoBehaviour
             NetworkManager.Singleton.StartClient();
             startClientStatus.SetOK();
 
-            var rand = new System.Random();
-            string randomName = "0x"+(rand.Next() % 10000).ToString("X4");
-            NotifyOfJoinServerRpc(randomName);
+            NetworkSessionData.joinCode = fieldJoinCode.field.text;
+
+            StartCoroutine(LoadSceneCoroutine());
         }
         catch (Exception ex)
         {
@@ -89,8 +91,9 @@ public class JoinGameScript : MonoBehaviour
         }
     }
 
-    [ServerRpc]
-    private void NotifyOfJoinServerRpc(string name) {
-        FindObjectOfType<PlayerList>().Add(name);
+    private IEnumerator LoadSceneCoroutine()
+    {
+        yield return SceneManager.LoadSceneAsync("LobbyScene", LoadSceneMode.Additive);
+        SceneManager.UnloadSceneAsync("HostOrJoinScene", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }
