@@ -7,10 +7,15 @@ public class SegmentDisplay : MonoBehaviour
 {
     [Tooltip("Digits, left to right")]
     public SegmentDigit[] segmentDigits;
+    public int maxValue = 1000;
+
+    private void Reset()
+    {
+        maxValue = Mathf.FloorToInt(Mathf.Pow(10, maxValue));
+    }
 
     public void SetValue(int val) {
-        var digits = GetDigits(val);
-        Assert.IsFalse(digits.Length != segmentDigits.Length, "digits and segment digits mismatch, value might be too big");
+        var digits = GetDigits(val % maxValue);
 
         for (int i = 0; i < digits.Length; i++) {
             segmentDigits[i].SetDigit(digits[i]);
