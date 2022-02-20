@@ -5,21 +5,51 @@ using System.Collections.Generic;
 
 public class PlayerList : MonoBehaviour
 {
+    public PlayerManager playerManager;
+
     public Transform playerTextsParent;
     public GameObject playerTextPrefab;
+    public GameObject noPlayersText;
     private List<TMP_Text> playerTexts = new List<TMP_Text>();
 
-    private async void Start() {
-        Debug.Log("Start called on PlayerList");
+    private void Start()
+    {
+        if (playerManager == null)
+        {
+            playerManager = FindObjectOfType<PlayerManager>();
+            if (playerManager == null)
+            {
+                Debug.LogWarning("Lacking player manager", this);
+                enabled = false;
+                return;
+            }
+        }
 
-        await PlayerManager.WaitUntilInitialized();
-        PlayerManager.Instance.AddOnListChangedListener(OnPlayerListChanged);
+        playerManager.PlayerListChanged += OnPlayerListChanged;
+        foreach (Transform child in playerTextsParent)
+        {
+            playerTexts.Add(child.GetComponentInChildren<TMP_Text>());
+        }
+        UpdatePlayerTextList();
     }
 
-    private void OnPlayerListChanged(NetworkListEvent<Player> ev) {
-        Debug.Log("Entered OnPlayerListChange");
+    private void OnDestroy()
+    {
+        if (playerManager != null)
+        {
+            playerManager.PlayerListChanged -= OnPlayerListChanged;
+        }
+    }
 
-        var players = PlayerManager.Instance.GetPlayerList();
+    private void OnPlayerListChanged(NetworkListEvent<Player> _)
+    {
+        Debug.Log("Entered OnPlayerListChange");
+        UpdatePlayerTextList();
+    }
+
+    private void UpdatePlayerTextList()
+    {
+        var players = playerManager.GetPlayerList();
         Debug.Log("Num players: " + players.Count);
 
         while (playerTexts.Count < players.Count)
@@ -29,13 +59,18 @@ public class PlayerList : MonoBehaviour
             playerTexts.Add(text);
         }
 
-        for (var i = 0; i < players.Count; i++) {
-            playerTexts[i].SetText(players[i].playerName.ToString());
+        while (playerTexts.Count > players.Count)
+        {
+            var lastIdx = playerTexts.Count - 1;
+            Destroy(playerTexts[lastIdx].gameObject);
+            playerTexts.RemoveAt(lastIdx);
         }
 
-        for (var i = playerTexts.Count - 1; i >= players.Count; i--) {
-            Destroy(playerTexts[i].gameObject);
-            playerTexts.RemoveAt(i);
+        noPlayersText.SetActive(players.Count == 0);
+
+        for (var i = 0; i < players.Count; i++)
+        {
+            playerTexts[i].SetText(players[i].playerName.ToString());
         }
     }
 }

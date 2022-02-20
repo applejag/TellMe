@@ -7,7 +7,8 @@ public class JoinCodeSetter : MonoBehaviour
     public JoinCodeScript joinCodeScript;
 
     private void Start() {
-        Debug.Log("Setting Join Code to '" + NetworkSessionData.joinCode.ToUpper() + "'");
-        joinCodeScript.SetCode(NetworkSessionData.joinCode.ToUpper());
+        var joinCode = NetworkSessionData.joinCode?.ToUpper();
+        Debug.Log($"Setting Join Code to '{joinCode}'");
+        joinCodeScript.SetCode(joinCode);
     }
 }

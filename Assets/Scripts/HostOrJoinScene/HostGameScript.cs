@@ -70,8 +70,6 @@ public class HostGameScript : MonoBehaviour
             joinCodeStatus.SetOK("Join code: " + joinCode);
             Debug.Log(joinCode);
             NetworkSessionData.joinCode = joinCode;
-
-            StartCoroutine(LoadSceneCoroutine());
         }
         catch (Exception ex)
         {
@@ -92,6 +90,10 @@ public class HostGameScript : MonoBehaviour
             SetFormInteractable(true);
             return;
         }
+
+        Instantiate(playerManagerPrefab);
+
+        StartCoroutine(LoadSceneCoroutine());
 
         Debug.Log("done");
     }
