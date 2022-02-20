@@ -17,7 +17,6 @@ public class HostGameScript : MonoBehaviour
     public StatusStack statusStack;
 
     public GameObject playerManagerPrefab;
-    private string joinCode;
 
     public void OnHostGameClick()
     {
@@ -67,7 +66,7 @@ public class HostGameScript : MonoBehaviour
 
         try
         {
-            joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            var joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
             joinCodeStatus.SetOK("Join code: " + joinCode);
             Debug.Log(joinCode);
             NetworkSessionData.joinCode = joinCode;
