@@ -1,18 +1,16 @@
 using UnityEngine;
 using Unity.Netcode;
-using System.Threading.Tasks;
+using TMPro;
+using System.Collections.Generic;
 
 public class PlayerList : MonoBehaviour
 {
-    public GameObject entriesParent;
-    private TMPro.TMP_Text[] entries;
-    private int numEntries;
+    public Transform playerTextsParent;
+    public GameObject playerTextPrefab;
+    private List<TMP_Text> playerTexts = new List<TMP_Text>();
 
     private async void Start() {
         Debug.Log("Start called on PlayerList");
-
-        entries = entriesParent.GetComponentsInChildren<TMPro.TMP_Text>();
-        numEntries = entries.Length;
 
         await PlayerManager.WaitUntilInitialized();
         PlayerManager.Instance.AddOnListChangedListener(OnPlayerListChanged);
@@ -23,12 +21,21 @@ public class PlayerList : MonoBehaviour
 
         var players = PlayerManager.Instance.GetPlayerList();
         Debug.Log("Num players: " + players.Count);
-        for (var i = 0; i < players.Count; i++) {
-            entries[i].SetText(players[i].playerName.ToString());
+
+        while (playerTexts.Count < players.Count)
+        {
+            var clone = Instantiate(playerTextPrefab, playerTextsParent);
+            var text = clone.GetComponentInChildren<TMP_Text>();
+            playerTexts.Add(text);
         }
 
-        for (var i = players.Count; i < numEntries; i++) {
-            entries[i].SetText("");
+        for (var i = 0; i < players.Count; i++) {
+            playerTexts[i].SetText(players[i].playerName.ToString());
+        }
+
+        for (var i = playerTexts.Count - 1; i >= players.Count; i--) {
+            Destroy(playerTexts[i].gameObject);
+            playerTexts.RemoveAt(i);
         }
     }
 }
