@@ -1,10 +1,12 @@
 using System;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.EventSystems;
 
 public class JoinGameScript : MonoBehaviour
 {
@@ -39,6 +41,7 @@ public class JoinGameScript : MonoBehaviour
         statusStack.ClearStatuses();
         var allocationStatus = statusStack.AddStatus("Join game");
         var startClientStatus = statusStack.AddStatus("Start client");
+        var playerManagerStatus = statusStack.AddStatus("Wait for player manager");
 
         JoinAllocation allocation;
         try
@@ -75,6 +78,8 @@ public class JoinGameScript : MonoBehaviour
             );
             NetworkManager.Singleton.StartClient();
             startClientStatus.SetOK();
+
+            NetworkSessionData.joinCode = fieldJoinCode.field.text;
         }
         catch (Exception ex)
         {
@@ -83,5 +88,39 @@ public class JoinGameScript : MonoBehaviour
             startClientStatus.SetError($"Start client: " + ex.Message);
             return;
         }
+
+
+        StartCoroutine(WaitForPlayerManagerCoroutine(playerManagerStatus));
+    }
+
+    private IEnumerator WaitForPlayerManagerCoroutine(StepStatus status)
+    {
+        PlayerManager playerManager = null;
+        while (playerManager == null)
+        {
+            playerManager = FindObjectOfType<PlayerManager>();
+            if (playerManager == null)
+            {
+                yield return null;
+            }
+        }
+        while (!playerManager.IsSpawned)
+        {
+            yield return null;
+        }
+        status.SetOK();
+
+        StartCoroutine(LoadSceneCoroutine());
+    }
+
+    private IEnumerator LoadSceneCoroutine()
+    {
+        var eventSystem = FindObjectOfType<EventSystem>();
+        if (eventSystem)
+        {
+            Destroy(eventSystem.gameObject);
+        }
+        yield return SceneManager.LoadSceneAsync("LobbyScene", LoadSceneMode.Additive);
+        SceneManager.UnloadSceneAsync("HostOrJoinScene", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }

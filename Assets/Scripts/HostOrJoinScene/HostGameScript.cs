@@ -1,9 +1,10 @@
 using System;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 using UnityEngine.UI;
 
 public class HostGameScript : MonoBehaviour
@@ -15,7 +16,7 @@ public class HostGameScript : MonoBehaviour
 
     public StatusStack statusStack;
 
-    public JoinCodeScript joinCodeGO;
+    public GameObject playerManagerPrefab;
 
     public void OnHostGameClick()
     {
@@ -63,12 +64,12 @@ public class HostGameScript : MonoBehaviour
             return;
         }
 
-        string joinCode;
         try
         {
-            joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            var joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
             joinCodeStatus.SetOK("Join code: " + joinCode);
-            joinCodeGO.SetCode(joinCode);
+            Debug.Log(joinCode);
+            NetworkSessionData.joinCode = joinCode;
         }
         catch (Exception ex)
         {
@@ -89,6 +90,10 @@ public class HostGameScript : MonoBehaviour
             SetFormInteractable(true);
             return;
         }
+
+        Instantiate(playerManagerPrefab);
+
+        StartCoroutine(LoadSceneCoroutine());
 
         Debug.Log("done");
     }
@@ -111,5 +116,11 @@ public class HostGameScript : MonoBehaviour
             Debug.LogError($"Failed to start host: {ex}", this);
             throw;
         }
+    }
+
+    private IEnumerator LoadSceneCoroutine()
+    {
+        yield return SceneManager.LoadSceneAsync("LobbyScene", LoadSceneMode.Additive);
+        SceneManager.UnloadSceneAsync("HostOrJoinScene", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }
