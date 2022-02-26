@@ -1,8 +1,6 @@
 using TMPro;
 using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerUIScript : MonoBehaviour
 {
@@ -19,12 +17,29 @@ public class PlayerUIScript : MonoBehaviour
     public GameObject panelNotReady;
     public GameObject panelReady;
 
+    private string newName;
+    private float newNameLastTime;
+    private const float newNameThrottle = 0.25f;
+
     private void OnDestroy()
     {
         if (previousPlayer != null)
         {
             previousPlayer.playerName.OnValueChanged -= OnPlayerNameChanged;
             previousPlayer.playerIsReady.OnValueChanged -= OnPlayerIsReadyChanged;
+        }
+    }
+
+    private void Update()
+    {
+        if (newName != null && previousPlayer)
+        {
+            if (newNameLastTime + newNameThrottle > Time.time)
+            {
+                previousPlayer.SetPlayerNameServerRpc(newName);
+                newNameLastTime = Time.time;
+                newName = null;
+            }
         }
     }
 
@@ -69,10 +84,17 @@ public class PlayerUIScript : MonoBehaviour
     public void OnNameFieldInputChanged()
     {
         if (!previousPlayer
-            || previousPlayer.playerName.Value == fieldName.text)
+            || previousPlayer.playerName.Value == fieldName.text
+            || !previousPlayer.IsOwner)
         {
             return;
         }
+        if (newName != null || Time.time - newNameLastTime < newNameThrottle)
+        {
+            newName = fieldName.text;
+            return;
+        }
         previousPlayer.SetPlayerNameServerRpc(fieldName.text);
+        newNameLastTime = Time.time;
     }
 }
