@@ -7,11 +7,16 @@ using UnityEngine;
 [RequireComponent(typeof(NetworkObject))]
 public class CountdownUIScript : NetworkBehaviour
 {
+    public GameStateScript gameState;
     public CanvasGroup countdownGroup;
     public TMP_Text countdownText;
     public Animator countdownAnim;
     public string countdownAnimTrigger = "Next";
-    public GameStateScript gameState;
+    public Animator abortedAnim;
+    public string abortedAnimTrigger = "Aborted";
+    private Coroutine countdownCoroutine;
+
+    public bool IsCountingDown => countdownCoroutine != null;
 
     private void Reset()
     {
@@ -62,10 +67,30 @@ public class CountdownUIScript : NetworkBehaviour
         StartCountdownClientRpc(string.Join('\n', texts));
     }
 
+    [ServerRpc]
+    public void AbortCountdownServerRpc()
+    {
+        if (IsCountingDown)
+        {
+            AbortCountdownClientRpc();
+        }
+    }
+
     [ClientRpc]
     private void StartCountdownClientRpc(string multilineTexts)
     {
-        StartCoroutine(CountdownCoroutine(multilineTexts));
+        countdownCoroutine = StartCoroutine(CountdownCoroutine(multilineTexts));
+    }
+
+    [ClientRpc]
+    private void AbortCountdownClientRpc()
+    {
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+            countdownCoroutine = null;
+        }
+        abortedAnim.SetTrigger(abortedAnimTrigger);
     }
 
     private IEnumerator CountdownCoroutine(string multilineTexts)
@@ -82,5 +107,6 @@ public class CountdownUIScript : NetworkBehaviour
         {
             gameState.StartGame();
         }
+        countdownCoroutine = null;
     }
 }

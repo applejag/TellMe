@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -12,6 +10,7 @@ public class StartGameUIScript : MonoBehaviour
     [Multiline]
     public string buttonTextFormat = @"Start game
 <size=70%>({0}/{1} players ready)</size>";
+    public string buttonAbortText = "Cancel game start";
     public GameStateScript gameState;
     public CountdownUIScript countdownUIScript;
 
@@ -60,7 +59,13 @@ public class StartGameUIScript : MonoBehaviour
 
     private void OnPlayersOrReadinessChanged(int _, int __)
     {
-        UpdateButton(gameState.playerCount.Value, gameState.playersReadyCount.Value);
+        var playerCount = gameState.playerCount.Value;
+        var playersReadyCount = gameState.playersReadyCount.Value;
+        if (playerCount == 0 || playersReadyCount < playerCount)
+        {
+            countdownUIScript.AbortCountdownServerRpc();
+        }
+        UpdateButton(playerCount, playersReadyCount);
     }
 
     public void OnStartGameButtonClicked()
@@ -69,6 +74,15 @@ public class StartGameUIScript : MonoBehaviour
         {
             return;
         }
-        countdownUIScript.StartCountdownServer();
+        if (countdownUIScript.IsCountingDown)
+        {
+            countdownUIScript.AbortCountdownServerRpc();
+            UpdateButton(gameState.playerCount.Value, gameState.playersReadyCount.Value);
+        }
+        else
+        {
+            countdownUIScript.StartCountdownServer();
+            buttonText.text = buttonAbortText;
+        }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerReadyUIScript : MonoBehaviour
 {
     private PlayerScript playerScript;
+    public CountdownUIScript countdownUIScript;
     public TMP_Text toggleButtonText;
     public string readyText = "Mark as not ready";
     public string notReadyText = "Mark as ready";
@@ -35,5 +36,6 @@ public class PlayerReadyUIScript : MonoBehaviour
         }
 
         playerScript.SetPlayerIsReadyServerRpc(isReady);
+        toggleButtonText.text = isReady ? readyText : notReadyText;
     }
 }
