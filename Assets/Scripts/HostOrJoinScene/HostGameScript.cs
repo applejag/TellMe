@@ -63,12 +63,12 @@ public class HostGameScript : MonoBehaviour
             return;
         }
 
+        string joinCode;
         try
         {
-            var joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            joinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
             joinCodeStatus.SetOK("Join code: " + joinCode);
             Debug.Log(joinCode);
-            NetworkSessionData.joinCode = joinCode;
         }
         catch (Exception ex)
         {
@@ -80,7 +80,7 @@ public class HostGameScript : MonoBehaviour
 
         try
         {
-            StartHost(allocation);
+            StartHost(allocation, joinCode);
             startHostStatus.SetOK();
         }
         catch (Exception ex)
@@ -95,7 +95,7 @@ public class HostGameScript : MonoBehaviour
         Debug.Log("done");
     }
 
-    private void StartHost(Allocation allocation)
+    private void StartHost(Allocation allocation, string joinCode)
     {
         try
         {
@@ -110,6 +110,7 @@ public class HostGameScript : MonoBehaviour
             var localPlayerNetObj = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
             var localPlayer = localPlayerNetObj.GetComponent<PlayerScript>();
             localPlayer.playerName.Value = fieldHostName.field.text;
+            localPlayer.joinCode.Value = joinCode;
         }
         catch (Exception ex)
         {

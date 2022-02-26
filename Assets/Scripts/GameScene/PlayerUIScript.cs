@@ -1,6 +1,8 @@
 using TMPro;
 using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUIScript : MonoBehaviour
 {
@@ -14,22 +16,28 @@ public class PlayerUIScript : MonoBehaviour
     public TMP_Text textType;
     private PlayerScript previousPlayer;
 
+    public GameObject panelNotReady;
+    public GameObject panelReady;
+
     private void OnDestroy()
     {
         if (previousPlayer != null)
         {
             previousPlayer.playerName.OnValueChanged -= OnPlayerNameChanged;
+            previousPlayer.playerIsReady.OnValueChanged -= OnPlayerIsReadyChanged;
         }
     }
 
     public void SetPlayer(PlayerScript player)
     {
-        if (previousPlayer!=null)
+        if (previousPlayer != null)
         {
             previousPlayer.playerName.OnValueChanged -= OnPlayerNameChanged;
+            previousPlayer.playerIsReady.OnValueChanged -= OnPlayerIsReadyChanged;
         }
 
         player.playerName.OnValueChanged += OnPlayerNameChanged;
+        player.playerIsReady.OnValueChanged += OnPlayerIsReadyChanged;
 
         fieldName.text =
         textName.text = player.playerName.Value.Value;
@@ -50,6 +58,12 @@ public class PlayerUIScript : MonoBehaviour
         }
         fieldName.text =
         textName.text = newValue.Value;
+    }
+
+    private void OnPlayerIsReadyChanged(bool previousValue, bool newValue)
+    {
+        panelReady.SetActive(newValue);
+        panelNotReady.SetActive(!newValue);
     }
 
     public void OnNameFieldInputChanged()

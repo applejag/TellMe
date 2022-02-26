@@ -76,8 +76,6 @@ public class JoinGameScript : MonoBehaviour
             );
             NetworkManager.Singleton.StartClient();
             startClientStatus.SetOK();
-
-            NetworkSessionData.joinCode = fieldJoinCode.field.text;
         }
         catch (Exception ex)
         {
