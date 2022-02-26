@@ -653,7 +653,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeHost: HOST
-  typeContestant: CONTESTANT
+  typeContestant: PLAYER
   formatOther: <b>{0}</b>
   formatYou: <b>{0}</b> <size=80%>(you)</size>
   textName: {fileID: 2521215884886664916}
