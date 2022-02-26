@@ -6,6 +6,8 @@ public class PlayerManager : NetworkBehaviour
 {
     private NetworkList<Player> players;
 
+    private static readonly PlayerComparer playerComparer = new PlayerComparer();
+
     public event NetworkList<Player>.OnListChangedDelegate PlayerListChanged
     {
         add => players.OnListChanged += value;
@@ -21,9 +23,29 @@ public class PlayerManager : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
+        if (NetworkManager.Singleton == null)
+        {
+            Debug.LogWarning("Lacking network manager", this);
+            enabled = false;
+            return;
+        }
+
         if (IsServer)
         {
             NetworkObject.Spawn(destroyWithScene: false);
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+            OnClientConnect(NetworkManager.Singleton.ServerClientId);
+        }
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton && IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
         }
     }
 
@@ -102,6 +124,37 @@ public class PlayerManager : NetworkBehaviour
         {
             list.Add(player);
         }
+        list.Sort(playerComparer);
         return list;
+    }
+
+    private void OnClientConnect(ulong clientId)
+    {
+        Debug.Log("Player connected: " + (clientId + 1));
+        var p = new Player
+        {
+            clientId = clientId,
+            playerName = "Player " + (clientId + 1)
+        };
+        AddPlayer(p);
+    }
+
+    private void OnClientDisconnect(ulong clientId)
+    {
+        Debug.Log("Player disconnected: " + (clientId + 1));
+        RemovePlayer(clientId);
+    }
+
+    private class PlayerComparer : IComparer<Player>
+    {
+        public int Compare(Player x, Player y)
+        {
+            var cmp = -x.IsServer.CompareTo(y.IsServer);
+            if (cmp == 0)
+            {
+                cmp = x.playerName.CompareTo(y.playerName);
+            }
+            return cmp;
+        }
     }
 }

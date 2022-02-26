@@ -16,7 +16,7 @@ public class HostGameScript : MonoBehaviour
 
     public StatusStack statusStack;
 
-    public GameObject playerManagerPrefab;
+    public string nextScene = "LobbyScene";
 
     public void OnHostGameClick()
     {
@@ -91,9 +91,7 @@ public class HostGameScript : MonoBehaviour
             return;
         }
 
-        Instantiate(playerManagerPrefab);
-
-        StartCoroutine(LoadSceneCoroutine());
+        NetworkManager.Singleton.SceneManager.LoadScene(nextScene, LoadSceneMode.Single);
 
         Debug.Log("done");
     }
@@ -110,17 +108,14 @@ public class HostGameScript : MonoBehaviour
                 connectionData: allocation.ConnectionData
             );
             NetworkManager.Singleton.StartHost();
+            var localPlayerNetObj = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+            var localPlayer = localPlayerNetObj.GetComponent<PlayerScript>();
+            localPlayer.playerName.Value = fieldHostName.field.text;
         }
         catch (Exception ex)
         {
             Debug.LogError($"Failed to start host: {ex}", this);
             throw;
         }
-    }
-
-    private IEnumerator LoadSceneCoroutine()
-    {
-        yield return SceneManager.LoadSceneAsync("LobbyScene", LoadSceneMode.Additive);
-        SceneManager.UnloadSceneAsync("HostOrJoinScene", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }

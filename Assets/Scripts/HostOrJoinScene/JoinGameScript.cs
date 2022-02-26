@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class JoinGameScript : MonoBehaviour
 {
@@ -41,7 +42,8 @@ public class JoinGameScript : MonoBehaviour
         statusStack.ClearStatuses();
         var allocationStatus = statusStack.AddStatus("Join game");
         var startClientStatus = statusStack.AddStatus("Start client");
-        var playerManagerStatus = statusStack.AddStatus("Wait for player manager");
+        var connectStatus = statusStack.AddStatus("Connect to host");
+        var playerSpawnStatus = statusStack.AddStatus("Wait to be spawned");
 
         JoinAllocation allocation;
         try
@@ -85,42 +87,8 @@ public class JoinGameScript : MonoBehaviour
         {
             Debug.LogError($"Failed to start client: {ex}", this);
             SetFormInteractable(true);
-            startClientStatus.SetError($"Start client: " + ex.Message);
+            startClientStatus.SetError($"Wait to be spawned: " + ex.Message);
             return;
         }
-
-
-        StartCoroutine(WaitForPlayerManagerCoroutine(playerManagerStatus));
-    }
-
-    private IEnumerator WaitForPlayerManagerCoroutine(StepStatus status)
-    {
-        PlayerManager playerManager = null;
-        while (playerManager == null)
-        {
-            playerManager = FindObjectOfType<PlayerManager>();
-            if (playerManager == null)
-            {
-                yield return null;
-            }
-        }
-        while (!playerManager.IsSpawned)
-        {
-            yield return null;
-        }
-        status.SetOK();
-
-        StartCoroutine(LoadSceneCoroutine());
-    }
-
-    private IEnumerator LoadSceneCoroutine()
-    {
-        var eventSystem = FindObjectOfType<EventSystem>();
-        if (eventSystem)
-        {
-            Destroy(eventSystem.gameObject);
-        }
-        yield return SceneManager.LoadSceneAsync("LobbyScene", LoadSceneMode.Additive);
-        SceneManager.UnloadSceneAsync("HostOrJoinScene", UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
     }
 }
