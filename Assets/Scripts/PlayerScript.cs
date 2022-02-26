@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour
 {
@@ -31,6 +32,18 @@ public class PlayerScript : NetworkBehaviour
     [ServerRpc]
     public void SetPlayerIsReadyServerRpc(bool isReady)
     {
+        var gameState = FindObjectOfType<GameStateScript>();
+        if (!gameState)
+        {
+            Debug.LogWarning("Lacking game state script.", this);
+            return;
+        }
+
+        if (gameState.isGameStarted.Value)
+        {
+            return;
+        }
+
         playerIsReady.Value = isReady;
     }
 }

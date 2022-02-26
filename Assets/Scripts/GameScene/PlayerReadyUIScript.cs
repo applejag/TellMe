@@ -18,6 +18,12 @@ public class PlayerReadyUIScript : MonoBehaviour
             return;
         }
 
+        if (NetworkManager.Singleton.IsHost)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         playerScript = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerScript>();
     }
 
