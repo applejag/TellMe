@@ -14,7 +14,6 @@ public class PlayerScript : NetworkBehaviour
     [ServerRpc]
     public void SetPlayerNameServerRpc(string name)
     {
-        Debug.Log($"SetPlayerNameServerRpc called with: {name}");
         if (string.IsNullOrWhiteSpace(name))
         {
             return;
