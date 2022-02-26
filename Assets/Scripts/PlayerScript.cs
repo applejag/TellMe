@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour
 {
-    public NetworkVariable<FixedString128Bytes> playerName = new NetworkVariable<FixedString128Bytes>();
+    public NetworkVariable<FixedString128Bytes> playerName = new();
 
     private void Awake()
     {

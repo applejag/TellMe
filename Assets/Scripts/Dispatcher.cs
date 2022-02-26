@@ -5,7 +5,7 @@ using UnityEngine;
 public class Dispatcher : MonoBehaviour
 {
     private static Dispatcher instance;
-    private readonly ConcurrentQueue<Action> actions = new ConcurrentQueue<Action>();
+    private readonly ConcurrentQueue<Action> actions = new();
 
     private void Start()
     {

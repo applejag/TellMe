@@ -6,7 +6,7 @@ public class PlayerManager : NetworkBehaviour
 {
     private NetworkList<Player> players;
 
-    private static readonly PlayerComparer playerComparer = new PlayerComparer();
+    private static readonly PlayerComparer playerComparer = new();
 
     public event NetworkList<Player>.OnListChangedDelegate PlayerListChanged
     {

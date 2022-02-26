@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StatusStack : MonoBehaviour
 {
-    public List<StepStatus> statuses = new List<StepStatus>();
+    public List<StepStatus> statuses = new();
     public GameObject prefabStepStatus;
 
     public StepStatus AddStatus(string message)

@@ -4,7 +4,7 @@ using System;
 
 public class OnSubmitScript : MonoBehaviour
 {
-    public OnSubmitEvent onSubmit = new OnSubmitEvent();
+    public OnSubmitEvent onSubmit = new();
 
     public void Submit(string val) {
         if (onSubmit != null && Input.GetKey(KeyCode.Return)) {

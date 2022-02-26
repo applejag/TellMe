@@ -3,11 +3,13 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerListUIScript : MonoBehaviour
+public class PlayerListUIScript : NetworkBehaviour
 {
     public Transform playerTextsParent;
     public GameObject playerTextPrefab;
-    private readonly List<PlayerUIScript> playerTexts = new List<PlayerUIScript>();
+    [SerializeField]
+    private NetworkList<NetworkObjectReference> playerList = new();
+    private readonly List<PlayerUIScript> playerTexts = new();
 
     private void Start()
     {
@@ -18,8 +20,16 @@ public class PlayerListUIScript : MonoBehaviour
             return;
         }
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += ServerOnClientConnect;
+            NetworkManager.Singleton.OnClientDisconnectCallback += ServerOnClientDisconnect;
+            playerList.Add(NetworkManager.Singleton.LocalClient.PlayerObject);
+        }
+        else
+        {
+            playerList.OnListChanged += ClientOnPlayerListListChanged;
+        }
 
         foreach (Transform child in playerTextsParent)
         {
@@ -28,22 +38,40 @@ public class PlayerListUIScript : MonoBehaviour
         UpdatePlayerTextList();
     }
 
-    private void OnClientDisconnect(ulong obj)
+    public override void OnDestroy()
     {
-        UpdatePlayerTextList();
-    }
-
-    private void OnClientConnect(ulong obj)
-    {
-        UpdatePlayerTextList();
-    }
-
-    private void OnDestroy()
-    {
-        if (NetworkManager.Singleton)
+        base.OnDestroy();
+        if (NetworkManager.Singleton && IsServer)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
+            NetworkManager.Singleton.OnClientConnectedCallback -= ServerOnClientConnect;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= ServerOnClientDisconnect;
+        }
+    }
+
+    private void ClientOnPlayerListListChanged(NetworkListEvent<NetworkObjectReference> changeEvent)
+    {
+        UpdatePlayerTextList();
+    }
+
+    private void ServerOnClientConnect(ulong id)
+    {
+        playerList.Add(NetworkManager.Singleton.ConnectedClients[id].PlayerObject);
+        UpdatePlayerTextList();
+    }
+
+    private void ServerOnClientDisconnect(ulong id)
+    {
+        var idx = playerList.AsEnumerable()
+            .Select(p => p.TryGet(out var netObj) ? netObj : null)
+            .IndexOf(p => p && p.OwnerClientId == id);
+        if (idx == -1)
+        {
+            Debug.LogWarning($"Disconnect of unknown client: {id}");
+        }
+        else
+        {
+            playerList.RemoveAt(idx);
+            UpdatePlayerTextList();
         }
     }
 
@@ -54,9 +82,9 @@ public class PlayerListUIScript : MonoBehaviour
             return;
         }
 
-        var players = NetworkManager.Singleton.SpawnManager.SpawnedObjectsList
-            .Where(o => o.IsPlayerObject)
-            .Select(o => o.GetComponent<PlayerScript>())
+        var players = playerList.AsEnumerable()
+            .Select(o => o.TryGet(out var netObj) ? netObj.GetComponent<PlayerScript>() : null)
+            .Where(o => o)
             .ToArray();
         Debug.Log("Num players: " + players.Length);
 

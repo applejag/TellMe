@@ -23,7 +23,7 @@ public class SegmentDisplay : MonoBehaviour
     }
 
     private int[] GetDigits(int num) {
-        List<int> digits = new List<int>();
+        List<int> digits = new();
         while (num > 0) {
             digits.Add(num % 10);
             num = num / 10;
