@@ -3,11 +3,7 @@ using Unity.Netcode;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Collections;
-using UnityEngine.EventSystems;
-using System.Linq;
 
 public class JoinGameScript : MonoBehaviour
 {
