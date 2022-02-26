@@ -1,0 +1,107 @@
+ID,Text,Weight
+1,3,100
+1,2,100
+1,1,100
+2,3,10
+2,2,10
+2,…,10
+2,1.5,10
+2,1,10
+2,0,10
+2,Let’s go!,10
+3,tree,10
+3,tu,10
+3,huan,10
+4,3,1
+4,2.9,1
+4,2.8,1
+4,faster,1
+4,1,1
+4,1.6,1
+4,fasterer,1
+4,0,1
+5,[Object object],1
+5,[Object object],1
+5,jk this isn’t javascript,1
+5,Let’s go!,1
+6,3,1
+6,2,1
+6,1,1
+6,,1
+6,,1
+6,hah,1
+6,ok lets go!,1
+7,3,1
+7,2,1
+7,3,1
+7,4,1
+7,5,1
+7,Let’s go!,1
+8,III,1
+8,II,1
+8,I,1
+9,round(π),1
+9,floor(e),1
+9,i<sup>2</sup>,1
+10,One,1
+10,360,1
+10,Original,1
+11,About to start game,1
+11,soon<sup>tm</sup>,1
+11,soon<sup>tm<sup>tm<sup>tm<sup>tm<sup>tm<sup>tm</sup></sup></sup></sup></sup></sup>,1
+11,ok now,1
+12,counting down,1
+12,Top 3 anime betrayals,1
+12,3: Katara dying at the end,1
+12,2: Harry Potter getting pregnant <sup>(again)</sup>,1
+12,1: Princess Celestia decapitating Twilight,1
+13,0b11,1
+13,0b10,1
+13,0b01,1
+14,trìa,1
+14,dìo,1
+14,èna,1
+15,три,1
+15,два,1
+15,один,1
+16,tre,1
+16,två,1
+16,ett,1
+17,trois,1
+17,deux,1
+17,une,1
+18,tres,1
+18,dos,1
+18,uno,1
+19,kolme,1
+19,kaksi,1
+19,yksi,1
+20,gålmmå,1
+20,guokta,1
+20,akta,1
+21,þrjú,1
+21,tvö,1
+21,eitt,1
+22,tre,1
+22,to,1
+22,et,1
+23,drei,1
+23,zwee,1
+23,ein,1
+24,three,1
+24,two,1
+24,one,1
+25,Li<br><size=30%>Lithium<br>6.94</size>,1
+25,He<br><size=30%>Helium<br>4.0026</size>,1
+25,H<br><size=30%>Hydrogen<br>1.008</size>,1
+26,One nippe – ah ah ah,1
+26,Two nipples – ah ah ah,1
+26,Three nippl-<br><i>oh f*ck that I’m out of here</i>,1
+27,0.3,1
+27,0.19999999999999998,1
+27,0.09999999999999998,1
+27,-2.7755575615628914e-17,1
+28,for i in {3..1}; do echo $i; sleep 1; done,1
+28,3,1
+28,2,1
+28,1,1

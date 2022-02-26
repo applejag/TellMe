@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,12 +12,15 @@ public class StartGameUIScript : MonoBehaviour
     [Multiline]
     public string buttonTextFormat = @"Start game
 <size=70%>({0}/{1} players ready)</size>";
-    private GameStateScript gameState;
+    public GameStateScript gameState;
+    public CountdownUIScript countdownUIScript;
 
     private void Reset()
     {
         button = GetComponentInChildren<Button>();
         buttonText = GetComponentInChildren<TMP_Text>();
+        gameState = FindObjectOfType<GameStateScript>();
+        countdownUIScript = FindObjectOfType<CountdownUIScript>();
     }
 
     private void Start()
@@ -33,14 +35,6 @@ public class StartGameUIScript : MonoBehaviour
         if (!NetworkManager.Singleton.IsHost)
         {
             gameObject.SetActive(false);
-            return;
-        }
-
-        gameState = FindObjectOfType<GameStateScript>();
-        if (!gameState)
-        {
-            Debug.LogWarning("Lacking game state.", this);
-            enabled = false;
             return;
         }
 
@@ -71,9 +65,10 @@ public class StartGameUIScript : MonoBehaviour
 
     public void OnStartGameButtonClicked()
     {
-        if (!enabled)
+        if (!enabled || gameState.playerCount.Value > gameState.playersReadyCount.Value)
         {
             return;
         }
+        countdownUIScript.StartCountdownServer();
     }
 }

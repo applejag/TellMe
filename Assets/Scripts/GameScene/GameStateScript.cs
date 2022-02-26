@@ -6,7 +6,9 @@ public class GameStateScript : NetworkBehaviour
 {
     public NetworkVariable<bool> isGameStarted = new();
     private readonly Dictionary<ulong, PlayerScript> playerScripts = new();
+    /// <summary>Number of players, excluding the host.</summary>
     public NetworkVariable<int> playerCount = new();
+    /// <summary>Number of players that are ready, excluding the host.</summary>
     public NetworkVariable<int> playersReadyCount = new();
 
     private void Start()
@@ -60,5 +62,15 @@ public class GameStateScript : NetworkBehaviour
         {
             playersReadyCount.Value--;
         }
+    }
+
+    public void StartGame()
+    {
+        if (isGameStarted.Value)
+        {
+            return;
+        }
+
+        isGameStarted.Value = true;
     }
 }
