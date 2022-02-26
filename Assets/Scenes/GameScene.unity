@@ -8067,21 +8067,13 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 2069018906}
     m_Modifications:
+    - target: {fileID: 1999229338, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
+      propertyPath: m_isRichText
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 859537304147349980, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
       propertyPath: m_Name
       value: Contestant UI panel
-      objectReference: {fileID: 0}
-    - target: {fileID: 1249720411573519062, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
-      propertyPath: m_fontSize
-      value: 17.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1249720411573519062, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4278236927
-      objectReference: {fileID: 0}
-    - target: {fileID: 2521215884886664916, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
-      propertyPath: m_fontSize
-      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 9093479184530021656, guid: 4c1617c1ad37bfd458285af36804dfa4, type: 3}
       propertyPath: m_Pivot.x
