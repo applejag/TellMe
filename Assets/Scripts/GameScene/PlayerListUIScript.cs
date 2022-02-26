@@ -8,8 +8,14 @@ public class PlayerListUIScript : NetworkBehaviour
     public Transform playerTextsParent;
     public GameObject playerTextPrefab;
     [SerializeField]
-    private NetworkList<NetworkObjectReference> playerList = new();
+    private NetworkList<NetworkObjectReference> playerList;
     private readonly List<PlayerUIScript> playerTexts = new();
+
+    private void Awake()
+    {
+        // Cant initialize NetworkList in ctor :(
+        playerList = new NetworkList<NetworkObjectReference>();
+    }
 
     private void Start()
     {
