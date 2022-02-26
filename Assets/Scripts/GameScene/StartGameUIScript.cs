@@ -44,7 +44,8 @@ public class StartGameUIScript : MonoBehaviour
             return;
         }
 
-        gameState.playersReadyCount.OnValueChanged += OnPlayersReadyCountChanged;
+        gameState.playerCount.OnValueChanged += OnPlayersOrReadinessChanged;
+        gameState.playersReadyCount.OnValueChanged += OnPlayersOrReadinessChanged;
         UpdateButton(0, 0);
     }
 
@@ -52,7 +53,8 @@ public class StartGameUIScript : MonoBehaviour
     {
         if (gameState)
         {
-            gameState.playersReadyCount.OnValueChanged -= OnPlayersReadyCountChanged;
+            gameState.playerCount.OnValueChanged -= OnPlayersOrReadinessChanged;
+            gameState.playersReadyCount.OnValueChanged -= OnPlayersOrReadinessChanged;
         }
     }
 
@@ -62,9 +64,9 @@ public class StartGameUIScript : MonoBehaviour
         buttonText.text = string.Format(buttonTextFormat, readyPlayers, players);
     }
 
-    private void OnPlayersReadyCountChanged(int previousValue, int newValue)
+    private void OnPlayersOrReadinessChanged(int _, int __)
     {
-        UpdateButton(gameState.playerCount.Value, newValue);
+        UpdateButton(gameState.playerCount.Value, gameState.playersReadyCount.Value);
     }
 
     public void OnStartGameButtonClicked()

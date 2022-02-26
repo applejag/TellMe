@@ -6788,7 +6788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1464369217}
-  buttonText: {fileID: 0}
+  buttonText: {fileID: 1553002834}
   buttonTextFormat: 'Start game
 
     <size=70%>({0}/{1} players ready)</size>'
