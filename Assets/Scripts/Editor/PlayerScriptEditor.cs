@@ -1,7 +1,8 @@
+using Unity.Netcode.Editor;
 using UnityEditor;
 
 [CustomEditor(typeof(PlayerScript))]
-public class PlayerScriptEditor : Editor
+public class PlayerScriptEditor : NetworkBehaviourEditor
 {
     public override void OnInspectorGUI()
     {

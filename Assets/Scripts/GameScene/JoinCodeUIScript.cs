@@ -27,7 +27,7 @@ public class JoinCodeUIScript : MonoBehaviour
             return;
         }
 
-        text.text = hostPlayer.joinCode.Value.Value;
+        text.text = hostPlayer.joinCode.Value.ToString();
     }
 
     public void OnClickToCopyClicked()

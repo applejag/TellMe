@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,11 +8,7 @@ public class PlayerScript : NetworkBehaviour
     public NetworkVariable<FixedString32Bytes> joinCode = new();
     public NetworkVariable<FixedString128Bytes> playerName = new();
     public NetworkVariable<bool> playerIsReady = new();
-
-    private void Awake()
-    {
-        playerName.Value = "<unnamed>";
-    }
+    public float tempFocusOnInitialNameChange = 5f;
 
     [ServerRpc]
     public void SetPlayerNameServerRpc(string name)
@@ -21,12 +18,20 @@ public class PlayerScript : NetworkBehaviour
             return;
         }
 
-        name = name.Trim();
-        if (name.Length > 128)
+        if (playerName.Value.Length == 0)
         {
-            name = name[..128];
+            // It's the initial name change
+            try
+            {
+                CameraManagerScript.Instance.ActivateCameraTemporarilyServer(CameraScript.Kind.PlayerCloseUp, OwnerClientId, tempFocusOnInitialNameChange);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex, this);
+            }
         }
-        playerName.Value = name;
+
+        playerName.Value = FixedStringUtil.CreateTruncated128(name.Trim());
     }
 
     [ServerRpc]

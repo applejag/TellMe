@@ -55,7 +55,7 @@ public class PlayerUIScript : MonoBehaviour
         player.playerIsReady.OnValueChanged += OnPlayerIsReadyChanged;
 
         fieldName.text =
-        textName.text = player.playerName.Value.Value;
+        textName.text = player.playerName.Value.ToString();
         fieldName.gameObject.SetActive(player.IsOwner);
         textName.gameObject.SetActive(!player.IsOwner);
 

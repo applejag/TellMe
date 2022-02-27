@@ -32,7 +32,7 @@ public class PlayerAltarScript : NetworkBehaviour
             return;
         }
         playerScript.playerName.OnValueChanged += OnPlayerNameChanged;
-        textPlayerName.text = playerScript.playerName.Value.Value;
+        textPlayerName.text = playerScript.playerName.Value.ToString();
     }
 
     public override void OnDestroy()

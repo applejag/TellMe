@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class CameraHandleScript : MonoBehaviour
+public class CameraScript : MonoBehaviour
 {
-    private static CameraHandleScript activeCamera;
-    private readonly static Dictionary<Key, CameraHandleScript> allCameras = new();
-
     [SerializeField, ReadOnlyDuringRuntime]
     private Kind kind;
     public GameObject cameraGameObj;
@@ -16,30 +13,20 @@ public class CameraHandleScript : MonoBehaviour
 
     private void Start()
     {
-        if (cameraGameObj.activeSelf)
+        var key = CameraManagerScript.Instance.RegisterCamera(this, kind);
+        if (!key.HasValue)
         {
-            if (!activeCamera)
-            {
-                activeCamera = this;
-            }
-            else
-            {
-                Debug.LogWarning("Multiple cameras active. Disabling self.", this);
-                DeactivateCamera();
-            }
+            enabled = false;
+            return;
         }
+        RegisteredKey = key.Value;
+    }
 
-        var clientId = 0uL;
-        var netObj = GetComponentInParent<NetworkObject>();
-        if (netObj != null)
+    private void OnDestroy()
+    {
+        if (enabled)
         {
-            clientId = netObj.OwnerClientId;
-        }
-
-        RegisteredKey = new Key(kind, clientId);
-        if (!allCameras.TryAdd(RegisteredKey, this))
-        {
-            Debug.LogWarning($"Failed to add camera due to key collision: {RegisteredKey}", this);
+            CameraManagerScript.Instance.UnregisterCamera(RegisteredKey);
         }
     }
 
@@ -52,12 +39,12 @@ public class CameraHandleScript : MonoBehaviour
         }
     }
 
-    private void ActivateCamera()
+    public void ActivateCamera()
     {
         cameraGameObj.SetActive(true);
     }
 
-    private void DeactivateCamera()
+    public void DeactivateCamera()
     {
         cameraGameObj.SetActive(false);
     }
@@ -75,7 +62,7 @@ public class CameraHandleScript : MonoBehaviour
         // 0x20-0x2F reserved for player cameras
     }
 
-    public struct Key : IEquatable<Key>
+    public struct Key : IEquatable<Key>, INetworkSerializable
     {
         public Kind kind;
         public ulong clientId;
@@ -104,6 +91,12 @@ public class CameraHandleScript : MonoBehaviour
         public override int GetHashCode()
         {
             return HashCode.Combine(kind, clientId);
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref kind);
+            serializer.SerializeValue(ref clientId);
         }
 
         public static bool operator ==(Key left, Key right)
