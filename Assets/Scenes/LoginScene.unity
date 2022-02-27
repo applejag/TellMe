@@ -1002,7 +1002,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6157995801381102327, guid: ca293171a64eb5a4b8452a121e6f69d1, type: 3}
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: ca293171a64eb5a4b8452a121e6f69d1, type: 3}
 --- !u!1001 &9041642656032873258

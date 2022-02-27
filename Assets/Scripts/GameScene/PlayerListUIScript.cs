@@ -3,39 +3,23 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerListUIScript : NetworkBehaviour
+public class PlayerListUIScript : MonoBehaviour
 {
     public Transform playerTextsParent;
     public GameObject playerTextPrefab;
-    [SerializeField]
-    private NetworkList<NetworkObjectReference> playerList;
+    public GameStateScript gameState;
     private readonly List<PlayerUIScript> playerTexts = new();
-
-    private void Awake()
-    {
-        // Cant initialize NetworkList in ctor :(
-        playerList = new NetworkList<NetworkObjectReference>();
-    }
 
     private void Start()
     {
-        if (NetworkManager.Singleton == null)
+        if (!gameState)
         {
-            Debug.LogWarning("Lacking network manager", this);
+            Debug.LogWarning("Lacking game state script", this);
             enabled = false;
             return;
         }
 
-        if (IsServer)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback += ServerOnClientConnect;
-            NetworkManager.Singleton.OnClientDisconnectCallback += ServerOnClientDisconnect;
-            playerList.Add(NetworkManager.Singleton.LocalClient.PlayerObject);
-        }
-        else
-        {
-            playerList.OnListChanged += ClientOnPlayerListListChanged;
-        }
+        gameState.playerList.OnListChanged += ClientOnPlayerListChanged;
 
         foreach (Transform child in playerTextsParent)
         {
@@ -44,54 +28,27 @@ public class PlayerListUIScript : NetworkBehaviour
         UpdatePlayerTextList();
     }
 
-    public override void OnDestroy()
+    private void OnDestroy()
     {
-        base.OnDestroy();
-        if (NetworkManager.Singleton && IsServer)
+        if (gameState)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= ServerOnClientConnect;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= ServerOnClientDisconnect;
+            gameState.playerList.OnListChanged -= ClientOnPlayerListChanged;
         }
     }
 
-    private void ClientOnPlayerListListChanged(NetworkListEvent<NetworkObjectReference> changeEvent)
+    private void ClientOnPlayerListChanged(NetworkListEvent<NetworkBehaviourReference> changeEvent)
     {
         UpdatePlayerTextList();
-    }
-
-    private void ServerOnClientConnect(ulong id)
-    {
-        playerList.Add(NetworkManager.Singleton.ConnectedClients[id].PlayerObject);
-        UpdatePlayerTextList();
-    }
-
-    private void ServerOnClientDisconnect(ulong id)
-    {
-        var idx = playerList.AsEnumerable()
-            .Select(p => p.TryGet(out var netObj) ? netObj : null)
-            .IndexOf(p => p && p.OwnerClientId == id);
-        if (idx == -1)
-        {
-            Debug.LogWarning($"Disconnect of unknown client: {id}");
-        }
-        else
-        {
-            playerList.RemoveAt(idx);
-            UpdatePlayerTextList();
-        }
     }
 
     private void UpdatePlayerTextList()
     {
-        if (!NetworkManager.Singleton)
+        if (!gameState)
         {
             return;
         }
 
-        var players = playerList.AsEnumerable()
-            .Select(o => o.TryGet(out var netObj) ? netObj.GetComponent<PlayerScript>() : null)
-            .Where(o => o)
-            .ToArray();
+        var players = gameState.PlayerScripts.ToArray();
         Debug.Log("Num players: " + players.Length);
 
         while (playerTexts.Count < players.Length)
